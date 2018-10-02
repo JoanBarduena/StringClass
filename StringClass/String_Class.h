@@ -11,9 +11,7 @@ private:
 	unsigned int mem_allocated = 0;
 	char* str = nullptr;
 
-public:
-
-	//Constructor
+	//Constructors
 	String(const char* string) 
 	{
 		if (string != NULL)
@@ -24,14 +22,27 @@ public:
 		}
 	};
 
-	String(String &copyString)
+	String(const String &copyString)
 	{
-		str = new char[copyString.mem_allocated];
+		mem_allocated = copyString.mem_allocated; 
+		str = new char[mem_allocated];
 		strcpy(str, copyString.str);
-	}
+	}; 
+
+	String() {}; 
 
 	//Destructor
-	~String() { delete[] str; }
+	~String() 
+	{
+		if (str != NULL)
+		{
+			delete[] str;
+			str = nullptr; 
+			//mem_allocated = 0; --> not necessary      
+		}
+	}
+
+public: 
 
 	bool empty() const
 	{
@@ -43,14 +54,38 @@ public:
 		return mem_allocated;
 	}
 
-	void clear()
+	unsigned int length() const
 	{
-		delete[] str;
-		str = nullptr;
-		mem_allocated = 0;
+		if (str != NULL) { return strlen(str);  }
 	}
 
+	void clear()
+	{
+		if (str != NULL)
+		{
+			delete[] str;
+			str = nullptr;
+			mem_allocated = 0;
+		}
+	}
+
+	//operator = 
+	String operator=(String &str);
 };
 
 #endif //STRING_H
 
+String String::operator= (String &string)
+{
+	delete[] str; 
+	if (string.length() != 0)
+	{
+		mem_allocated = string.length(); 
+		str = new char[mem_allocated]; 
+		for (int i = 0; i <	mem_allocated; ++i)
+		{
+			str[i] = string.str[i]; 
+		}
+		return *this; 
+	}
+}
